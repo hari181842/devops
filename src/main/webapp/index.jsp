@@ -2,7 +2,7 @@
 <head>
 <title>Hello World!</title>
 	<br>
-	<h1> Welcome to Learndevops Morning batch <h1>
+	<h1> Welcome to Learndevops Morning batch (7:30 - 8:30) <h1>
 		<br>
 		<h1> bathala created this page</h1>
 		
