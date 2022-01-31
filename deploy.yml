@@ -4,7 +4,7 @@
   tasks: 
   - name: copy the war file
     copy: 
-      src: target/hello.com
+      src: target/hari
       dest: /tomcat/webapps/
       remote_src: true
   - name: stop the tomcat
