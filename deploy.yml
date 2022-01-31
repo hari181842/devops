@@ -6,6 +6,7 @@
     copy: 
       src: target/hello.com
       dest: /opt/tomcat/webapps/
+      remote_src: true
   - name: stop the tomcat
     shell: nohup /opt/tomcat/bin/shutdown.shell
   - name: starting the tomcat
