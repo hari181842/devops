@@ -5,7 +5,7 @@
   - name: copy the war file
     copy: 
       src: target/hello.war
-      dest: /tomcat/webapps/
+      dest: /opt/tomcat/webapps/
       remote_src: true
   - name: stop the tomcat
     shell: nohup /opt/tomcat/bin/shutdown.shell
