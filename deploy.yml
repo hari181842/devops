@@ -7,6 +7,6 @@
       src: target/hello.war
       dest: /opt/tomcat/webapps/
   - name: stop the tomcat
-    shell: nohup /tomcat/bin/shutdown.sh
+    shell: nohup /opt/tomcat/bin/shutdown.sh
   - name: starting the tomcat
-    shell: nohup /tomcat/bin/startup.sh  
+    shell: nohup /opt/tomcat/bin/startup.sh  
