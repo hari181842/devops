@@ -1,0 +1,80 @@
+pipeline {
+  parameters {
+  choice choices: ['dev', 'stg', 'master'], description: 'Please select your branch', name: 'Branch'
+}
+    agent any
+     environment {
+  PATH = "/opt/maven/bin:$PATH"
+}
+    stages {
+		stage('checkout') {
+		steps {
+		checkout(
+		[
+		$class: 'GitSCM', 
+		branches: [
+		[name: "*/${Branch}"
+		]
+		], 
+		extensions: [
+		],
+		userRemoteConfigs: [
+		[
+		credentialsId: 'Github', url: 'https://github.com/hari181842/devops.git']
+		]
+		]
+		)
+    }
+}
+  stage('build'){
+  steps{
+  sh 'mvn clean package'
+  }
+ }
+ stage ('Artifact upload') {
+ steps{
+     script{
+     def mavenPom = readMavenPom file: 'pom.xml'
+     nexusArtifactUploader artifacts: 
+    [
+    [
+     artifactId: 'hello-world-war', 
+     classifier: '',
+    file: "target/hello-world-war-${mavenPom.version}.war", 
+    type: 'war'
+ ]
+ ], 
+ credentialsId: 'hareesh_nexus',
+ groupId: 'com.efsavage',
+ nexusUrl: '3.109.229.170:8081', 
+ nexusVersion: 'nexus3', 
+ protocol: 'http', 
+ repository: 'my-repo', 
+ version: "${mavenPom.version}" 
+     }
+   }
+  }
+  stage('rename') {
+     steps {
+        sh' mv target/*.war target/hello.war'
+      }
+  }
+  stage('deploy') {
+    steps {
+       ansiblePlaybook credentialsId: 'Appservers', disableHostKeyChecking: true, installation: 'ansible', inventory: 'myinv', playbook: 'deploy.yml'
+  }
+}
+}
+post {
+  failure {
+            mail to: 'bathalahareesh@gmail.com', from: 'hari181842@gmail.com',
+                subject: "buld status: ${env.JOB_NAME} - Failed", 
+                body: "Job Failed - \"${env.JOB_NAME}\" build: ${env.BUILD_NUMBER}\n\nView the log at:\n ${env.BUILD_URL}\n\nBlue Ocean:\n${env.RUN_DISPLAY_URL}"
+        }
+        success {
+            mail to: 'bathalahareesh@gmail.com', from: 'hari181842@gmail.com',
+                subject: "buld status: ${env.JOB_NAME} - success",
+                body: "Job success - \"${env.JOB_NAME}\" build: ${env.BUILD_NUMBER}\n\nView the log at:\n ${env.BUILD_URL}\n\nBlue Ocean:\n${env.RUN_DISPLAY_URL}"
+}
+}
+}
